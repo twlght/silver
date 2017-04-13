@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, abort, redirect, request, current_app
 from flask_login import login_required, current_user
-from ..decorators import admin_required
+from ..decorators import admin_required, permission_required
 from . import main
 from .. import db
 from .forms import EditProfileForm, EditProfileAdminForm, TestForm, PostForm
@@ -99,5 +99,55 @@ def edit_post(id):
         return redirect(url_for('main.post', id=post.id))  # post & main.post
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
+
+
+@main.route('/follow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    if current_user.is_following(user):
+        flash('you are already following this user')
+        return redirect(url_for('.user', username=username))
+    current_user.follow(user)
+    flash('You are now following %s.' % username)
+    return redirect(url_for('.user', username=username))
+
+
+@main.route('/followers/<username>')
+def followers(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('apge', 1, type=int)
+    pagination = user.followers.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOERS_PER_PAGE'] or 20,
+        error_out=False)
+    follows = [{}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
