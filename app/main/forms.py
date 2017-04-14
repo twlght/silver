@@ -42,6 +42,11 @@ class EditProfileAdminForm(Form):
             raise ValidationError('Username already in use')
 
 
+class CommentForm(Form):
+    body = StringField('Enter your comment', validators=[DataRequired])
+    submit = SubmitField('Submit')
+
+
 class PostForm(Form):
     text = PageDownField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
